@@ -8,7 +8,7 @@
     margin: 0 auto;
 }
 
-.grid {
+.board {
     display: flex;
     flex-flow: row wrap;
     border: 0.5px solid black;
@@ -27,6 +27,13 @@
     min-width: 33.3%;
     min-height: 33.3%;
     font-size: 50px;
+}
+
+.reset {
+    display: block;
+    margin: 20px auto;
+    width: 5rem;
+    height: 2rem;
 }
 
 h1 {

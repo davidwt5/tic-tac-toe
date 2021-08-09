@@ -12,6 +12,13 @@ const gameBoard = (() => {
         }
     };
 
+    const reset = () => {
+        _board = [];
+        initialise();
+    }
+
+    const getBoard = () => _board;
+
     // Disallows setting a symbol on an occupied tile
     // Returns 1 on success and -1 on fail
     const setTile = (x, y, symbol) => {
@@ -54,7 +61,7 @@ const gameBoard = (() => {
     // Used for debugging
     const printTiles = () => console.table(_board);
 
-    return Object.assign({setTile, initialise, checkVictory}, {printTiles});
+    return Object.assign({getBoard, setTile, initialise, checkVictory, reset}, {printTiles});
 })();
 
 const playerFactory = (name, symbol) => {
@@ -75,6 +82,8 @@ const gameMaster = (() => {
 
     const getUpcomingSymbol = () => turn.getSymbol();
 
+    // Stop when there is a winner, declare a tie
+
     const playRound = (x, y) => {
         // If setTile is not successful, exit
         if(gameBoard.setTile(x, y, turn.getSymbol())) {
@@ -91,9 +100,16 @@ const gameMaster = (() => {
 })();
 
 const displayController = (() => {
-    // Only display the symbol in the tile if its empty
-    const _displaySymbol = (tile, symbol) => {
-        if(!tile.innerText) tile.innerText = symbol;
+    // redners the board based on internal board
+    const _renderBoard = () => {
+        const board = gameBoard.getBoard();
+        for(let x=0; x<3; x++) {
+            for(let y=0; y<3; y++) {
+                // Find a tile whose data-x == x and data-y == y
+                let tile = document.querySelector(`.tile[data-x="${x}"][data-y="${y}"]`)
+                tile.innerText = board[x][y];
+            }
+        }
     };
 
     const _generateGrid = () => {
@@ -104,30 +120,22 @@ const displayController = (() => {
                 tile.dataset.x = x;
                 tile.dataset.y = y;
                 tile.addEventListener('click', () => {
-                    _displaySymbol(tile, gameMaster.getUpcomingSymbol());
                     gameMaster.playRound(tile.dataset.x, tile.dataset.y);
+                    _renderBoard();
                 });
-                document.querySelector('.grid').appendChild(tile);
+                document.querySelector('.board').appendChild(tile);
             }
         }
     };
+
+    document.querySelector('.reset')
+        .addEventListener('click', e => {
+        const tiles = document.querySelectorAll('.tile');
+        tiles.forEach(tile => tile.innerText = "");
+        gameBoard.reset();
+    });
     
     _generateGrid();
 
     return {};
 })();
-
-// let playerDavid = playerFactory('David', SYMBOL.O);
-// let playerWinston = playerFactory('Winston', SYMBOL.X);
-
-// gameBoard.initialise();
-
-// gameBoard.setTile(1,1,playerDavid.getSymbol());
-// gameBoard.setTile(0,0,playerWinston.getSymbol());
-// gameBoard.setTile(2,0,playerDavid.getSymbol());
-// gameBoard.setTile(0,1,playerWinston.getSymbol());
-// gameBoard.setTile(0,2,playerDavid.getSymbol());
-
-// gameBoard.printTiles();
-
-
