@@ -130,9 +130,8 @@ const displayController = (() => {
 
     document.querySelector('.reset')
         .addEventListener('click', e => {
-        const tiles = document.querySelectorAll('.tile');
-        tiles.forEach(tile => tile.innerText = "");
         gameBoard.reset();
+        _renderBoard();
     });
     
     _generateGrid();
