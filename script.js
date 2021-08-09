@@ -122,7 +122,7 @@ const displayController = (() => {
     };
 
     const _displayVictor = (victorName) => {
-        console.log(`${victorName} is the winner!`);
+        alert(`${victorName} is the winner!`);
     }
 
     const _generateGrid = () => {
