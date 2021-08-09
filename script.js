@@ -48,9 +48,9 @@ const gameBoard = (() => {
     };
     const _checkVictorDiagonals = () => {
         if(_board[0][0] === _board[1][1] && _board[0][0] === _board[2][2])
-            if(_board[0][0])return _board[0][0];
-        else if(_board[0][2] === _board[1][1] && _board[0][2] === _board[2][0])
-            if(_board[0][2])return _board[0][2];
+            if(_board[0][0]) return _board[0][0];
+        if(_board[0][2] === _board[1][1] && _board[0][2] === _board[2][0])
+            if(_board[0][2]) return _board[0][2];
         return null;
     };
 
@@ -88,12 +88,12 @@ const gameMaster = (() => {
     const playRound = (x, y) => {
         // Only execute if the game is not over and setTile is successful
         if(!gameIsOver && gameBoard.setTile(x, y, turn.getSymbol())) {
-            turn = (turn === player.one) ? player.two : player.one;
-            let victor = gameBoard.checkVictory();
-            if(victor) {
+            let victorSymbol = gameBoard.checkVictory();
+            if(victorSymbol) {
                 gameIsOver = true;
-                console.log(`The winner is ${victor}`);
+                return turn.getName();
             }
+            turn = (turn === player.one) ? player.two : player.one;
         }
     };
 
@@ -121,6 +121,10 @@ const displayController = (() => {
         }
     };
 
+    const _displayVictor = (victorName) => {
+        console.log(`${victorName} is the winner!`);
+    }
+
     const _generateGrid = () => {
         for(let x=0; x<3; x++) {
             for(let y=0; y<3; y++) {
@@ -129,8 +133,10 @@ const displayController = (() => {
                 tile.dataset.x = x;
                 tile.dataset.y = y;
                 tile.addEventListener('click', () => {
-                    gameMaster.playRound(tile.dataset.x, tile.dataset.y);
+                    let victorName = gameMaster.playRound(tile.dataset.x, tile.dataset.y);
                     _renderBoard();
+                    
+                    if(victorName) _displayVictor(victorName);
                 });
                 document.querySelector('.board').appendChild(tile);
             }
