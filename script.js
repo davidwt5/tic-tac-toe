@@ -13,9 +13,16 @@ const gameBoard = (() => {
     };
 
     // Disallows setting a symbol on an occupied tile
+    // Returns 1 on success and -1 on fail
     const setTile = (x, y, symbol) => {
-        if(!_board[x][y]) _board[x][y] = symbol;
-        else console.error("ERR: Assignment to an occupied tile");
+        if(!_board[x][y]) {
+            _board[x][y] = symbol;
+            return 1;
+        }
+        else {
+            console.error("ERR: Assignment to an occupied tile");
+            return -1;
+        }
     }
 
     const _checkVictorRows = () => {
@@ -60,44 +67,58 @@ const playerFactory = (name, symbol) => {
 const gameMaster = (() => {
     // Keeps track of players
     let player = {
-        one: null,
-        two: null
+        one: playerFactory('Player 1', SYMBOL.O),
+        two: playerFactory('Player 2', SYMBOL.X)
     }
 
-    // Prevent two players from sharing the same symbol
-    const setPlayerOne = p1 => {
-        if(!player.two || player.two.getSymbol() != p1.getSymbol())
-            player.one = p1;
-        else {
-            console.error("ERR: Bad player 1 symbol");
-        }
-    }
-
-    const setPlayerTwo = p2 => {
-        if(!player.one || player.one.getSymbol() != p2.getSymbol())
-            player.two = p2;
-        else {
-            console.error("ERR: Bad player 2 symbol");
-        }
-    }
+    // Always starts with player one
+    let turn = player.one;
     
-    // Controls flow of game
-    
+    const playRound = (x, y) => {
+        // If setTile is successful, swap the turn
+        if(setTile(x, y, turn.getSymbol()))
+            turn = (turn === player.one) ? player.two : player.one;
+        
+        let victor = checkVictory();
+        if(victor) console.log("The winner is " + victor);
+    };
 
-    return {setPlayerOne, setPlayerTwo};
+    return {playRound};
 })();
 
-let playerDavid = playerFactory('David', SYMBOL.O);
-let playerWinston = playerFactory('Winston', SYMBOL.X);
+const displayController = (() => {
+    const _generateGrid = () => {
+        for(let x=0; x<3; x++) {
+            for(let y=0; y<3; y++) {
+                let tile = document.createElement('div');
+                tile.classList.add('tile');
+                tile.dataset.x = x;
+                tile.dataset.y = y;
+                tile.addEventListener('click', () => {
+                    gameMaster.playRound(tile.dataset.x, tile.dataset.y);
 
-gameBoard.initialise();
+                });
+                document.querySelector('.grid').appendChild(tile);
+            }
+        }
+    }
+    
+    _generateGrid();
 
-gameBoard.setTile(1,1,playerDavid.getSymbol());
-gameBoard.setTile(0,0,playerWinston.getSymbol());
-gameBoard.setTile(2,0,playerDavid.getSymbol());
-gameBoard.setTile(0,1,playerWinston.getSymbol());
-gameBoard.setTile(0,2,playerDavid.getSymbol());
+    return {};
+})();
 
-gameBoard.printTiles();
+// let playerDavid = playerFactory('David', SYMBOL.O);
+// let playerWinston = playerFactory('Winston', SYMBOL.X);
+
+// gameBoard.initialise();
+
+// gameBoard.setTile(1,1,playerDavid.getSymbol());
+// gameBoard.setTile(0,0,playerWinston.getSymbol());
+// gameBoard.setTile(2,0,playerDavid.getSymbol());
+// gameBoard.setTile(0,1,playerWinston.getSymbol());
+// gameBoard.setTile(0,2,playerDavid.getSymbol());
+
+// gameBoard.printTiles();
 
 
