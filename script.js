@@ -35,22 +35,22 @@ const gameBoard = (() => {
     const _checkVictorRows = () => {
         for(let x=0; x<3; x++) {
             if(_board[x][0] === _board[x][1] && _board[x][0] === _board[x][2])
-                return _board[x][0];
+                if(_board[x][0]) return _board[x][0];
         }
         return null;
     };
     const _checkVictorColumns = () => {
         for(let y=0; y<3; y++) {
             if(_board[0][y] === _board[1][y] && _board[0][y] === _board[2][y])
-                return _board[0][y];
+            if(_board[0][y]) return _board[0][y];
         }
         return null;
     };
     const _checkVictorDiagonals = () => {
         if(_board[0][0] === _board[1][1] && _board[0][0] === _board[2][2])
-            return _board[0][0];
+            if(_board[0][0])return _board[0][0];
         else if(_board[0][2] === _board[1][1] && _board[0][2] === _board[2][0])
-            return _board[0][2];
+            if(_board[0][2])return _board[0][2];
         return null;
     };
 
@@ -79,24 +79,33 @@ const gameMaster = (() => {
     }
 
     let turn = player.one;
+    let gameIsOver = false;
 
     const getUpcomingSymbol = () => turn.getSymbol();
 
     // Stop when there is a winner, declare a tie
 
     const playRound = (x, y) => {
-        // If setTile is not successful, exit
-        if(gameBoard.setTile(x, y, turn.getSymbol())) {
+        // Only execute if the game is not over and setTile is successful
+        if(!gameIsOver && gameBoard.setTile(x, y, turn.getSymbol())) {
             turn = (turn === player.one) ? player.two : player.one;
             let victor = gameBoard.checkVictory();
-            if(victor) console.log("The winner is " + victor);
+            if(victor) {
+                gameIsOver = true;
+                console.log(`The winner is ${victor}`);
+            }
         }
     };
 
-    // Always starts with player one
+    const resetGame = () => {
+        gameBoard.reset();
+        turn = player.one;
+        gameIsOver = false;
+    }
+
     gameBoard.initialise();
 
-    return {playRound, getUpcomingSymbol};
+    return {playRound, getUpcomingSymbol, resetGame};
 })();
 
 const displayController = (() => {
@@ -130,7 +139,7 @@ const displayController = (() => {
 
     document.querySelector('.reset')
         .addEventListener('click', e => {
-        gameBoard.reset();
+        gameMaster.resetGame();
         _renderBoard();
     });
     
