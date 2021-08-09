@@ -41,7 +41,7 @@ const gameBoard = (() => {
     };
     const _checkVictorDiagonals = () => {
         if(_board[0][0] === _board[1][1] && _board[0][0] === _board[2][2])
-            return board[0][0];
+            return _board[0][0];
         else if(_board[0][2] === _board[1][1] && _board[0][2] === _board[2][0])
             return _board[0][2];
         return null;
@@ -71,22 +71,31 @@ const gameMaster = (() => {
         two: playerFactory('Player 2', SYMBOL.X)
     }
 
-    // Always starts with player one
     let turn = player.one;
-    
+
+    const getUpcomingSymbol = () => turn.getSymbol();
+
     const playRound = (x, y) => {
-        // If setTile is successful, swap the turn
-        if(setTile(x, y, turn.getSymbol()))
+        // If setTile is not successful, exit
+        if(gameBoard.setTile(x, y, turn.getSymbol())) {
             turn = (turn === player.one) ? player.two : player.one;
-        
-        let victor = checkVictory();
-        if(victor) console.log("The winner is " + victor);
+            let victor = gameBoard.checkVictory();
+            if(victor) console.log("The winner is " + victor);
+        }
     };
 
-    return {playRound};
+    // Always starts with player one
+    gameBoard.initialise();
+
+    return {playRound, getUpcomingSymbol};
 })();
 
 const displayController = (() => {
+    // Only display the symbol in the tile if its empty
+    const _displaySymbol = (tile, symbol) => {
+        if(!tile.innerText) tile.innerText = symbol;
+    };
+
     const _generateGrid = () => {
         for(let x=0; x<3; x++) {
             for(let y=0; y<3; y++) {
@@ -95,13 +104,13 @@ const displayController = (() => {
                 tile.dataset.x = x;
                 tile.dataset.y = y;
                 tile.addEventListener('click', () => {
+                    _displaySymbol(tile, gameMaster.getUpcomingSymbol());
                     gameMaster.playRound(tile.dataset.x, tile.dataset.y);
-
                 });
                 document.querySelector('.grid').appendChild(tile);
             }
         }
-    }
+    };
     
     _generateGrid();
 
