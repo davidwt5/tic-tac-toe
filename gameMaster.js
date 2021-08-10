@@ -1,40 +1,48 @@
 const gameMaster = (() => {
     // Keeps track of players
     let player = {
-        one: playerFactory('Player 1', SYMBOL.O),
-        two: playerFactory('Player 2', SYMBOL.X)
+        one: playerFactory('Player', SYMBOL.O),
+        two: playerFactory('AI', SYMBOL.X)
     }
 
     let turn = player.one;
     let gameIsOver = false;
 
-    const getUpcomingSymbol = () => turn.getSymbol();
 
-    const playRound = (x, y, opponent) => {
-        if(opponent === "ai" && turn === player.two)
-            return _aiRound(x, y);
-        else return _playerRound(x, y);
-    }
+    const playRound = (x, y) => {
+        let legalMoveMade // Boolean: true if a legal move was made, false otherwise
+        // Try to make a move if the game is not over
+        if(!gameIsOver)
+            legalMoveMade = (turn === player.one) ? _playerRound(x, y) : _playerRound(x, y);
 
-    const _playerRound = (x, y) => {
-        // Only execute if the game is not over and setTile is successful
-        if(!gameIsOver && gameBoard.setTile(x, y, turn.getSymbol())) {
+        // If a legal move was made, check draw, victory, and pass the turn
+        if(legalMoveMade) {
             if(gameBoard.checkDraw()) {
                 gameIsOver = true;
                 return "draw";
             }
-
+    
             let victorSymbol = gameBoard.checkVictory();
             if(victorSymbol) {
                 gameIsOver = true;
                 return turn.getName();
             }
+    
+            // Pass the turn
             turn = (turn === player.one) ? player.two : player.one;
         }
-    };
+    }
 
-    const _aiRound = (x, y) => {
-        alert("WIP");
+    const _playerRound = (x, y) => gameBoard.setTile(x, y, turn.getSymbol());
+
+    const _aiRound = () => {
+        const selectedTile = aiController.minimax();
+        gameBoard.setTile(selectedTile.x, selectedTile.y, player.two.getSymbol());
+        let victor = checkGameEnd();
+        if(victor) {
+            gameIsOver = true;
+            return;
+        }
     }
 
     const resetGame = () => {
@@ -45,5 +53,5 @@ const gameMaster = (() => {
 
     gameBoard.initialise();
 
-    return {playRound, getUpcomingSymbol, resetGame};
+    return {playRound, resetGame};
 })();

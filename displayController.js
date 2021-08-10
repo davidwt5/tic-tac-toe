@@ -30,10 +30,8 @@ const displayController = (() => {
                 tile.dataset.x = x;
                 tile.dataset.y = y;
                 tile.addEventListener('click', () => {
-                    let opponent = document.querySelector('.opponent');
-                    let victorName = gameMaster.playRound(x, y, opponent.value);
+                    let victorName = gameMaster.playRound(x, y);
                     _renderBoard();
-                    opponent.setAttribute("disabled", "true");
                     if(victorName) _displayVictor(victorName);
                 });
                 document.querySelector('.board').appendChild(tile);
@@ -46,7 +44,6 @@ const displayController = (() => {
         gameMaster.resetGame();
         _renderBoard();
         _resetVictorDisplay();
-        document.querySelector('.opponent').removeAttribute("disabled");
     });
     
     _generateGrid();
