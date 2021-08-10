@@ -46,3 +46,8 @@ h1 {
     margin: 10px auto;
     text-align: center;
 }
+
+select {
+    display: block;
+    margin: 10px auto;
+}

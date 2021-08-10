@@ -94,7 +94,7 @@ const gameMaster = (() => {
 
     // Stop when there is a winner, declare a tie
 
-    const playRound = (x, y) => {
+    const playRoundPvp = (x, y) => {
         // Only execute if the game is not over and setTile is successful
         if(!gameIsOver && gameBoard.setTile(x, y, turn.getSymbol())) {
             if(gameBoard.checkDraw()) {
@@ -111,6 +111,10 @@ const gameMaster = (() => {
         }
     };
 
+    const playRoundPve = (x, y) => {
+        alert("WIP");
+    }
+
     const resetGame = () => {
         gameBoard.reset();
         turn = player.one;
@@ -119,7 +123,7 @@ const gameMaster = (() => {
 
     gameBoard.initialise();
 
-    return {playRound, getUpcomingSymbol, resetGame};
+    return {playRoundPvp, playRoundPve, getUpcomingSymbol, resetGame};
 })();
 
 const displayController = (() => {
@@ -154,8 +158,13 @@ const displayController = (() => {
                 tile.dataset.x = x;
                 tile.dataset.y = y;
                 tile.addEventListener('click', () => {
-                    let victorName = gameMaster.playRound(tile.dataset.x, tile.dataset.y);
+                    let opponent = document.querySelector('.opponent');
+                    let victorName = (opponent.value === "ai") ? 
+                        gameMaster.playRoundPve(tile.dataset.x, tile.dataset.y) :
+                        gameMaster.playRoundPvp(tile.dataset.x, tile.dataset.y);
+
                     _renderBoard();
+                    opponent.setAttribute("disabled", "true");
                     if(victorName) _displayVictor(victorName);
                 });
                 document.querySelector('.board').appendChild(tile);
@@ -168,6 +177,7 @@ const displayController = (() => {
         gameMaster.resetGame();
         _renderBoard();
         _resetVictorDisplay();
+        document.querySelector('.opponent').removeAttribute("disabled");
     });
     
     _generateGrid();
