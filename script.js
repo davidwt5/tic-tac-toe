@@ -92,9 +92,13 @@ const gameMaster = (() => {
 
     const getUpcomingSymbol = () => turn.getSymbol();
 
-    // Stop when there is a winner, declare a tie
+    const playRound = (x, y, opponent) => {
+        if(opponent === "ai" && turn === player.two)
+            return _aiRound(x, y);
+        else return _playerRound(x, y);
+    }
 
-    const playRoundPvp = (x, y) => {
+    const _playerRound = (x, y) => {
         // Only execute if the game is not over and setTile is successful
         if(!gameIsOver && gameBoard.setTile(x, y, turn.getSymbol())) {
             if(gameBoard.checkDraw()) {
@@ -111,7 +115,7 @@ const gameMaster = (() => {
         }
     };
 
-    const playRoundPve = (x, y) => {
+    const _aiRound = (x, y) => {
         alert("WIP");
     }
 
@@ -123,7 +127,7 @@ const gameMaster = (() => {
 
     gameBoard.initialise();
 
-    return {playRoundPvp, playRoundPve, getUpcomingSymbol, resetGame};
+    return {playRound, getUpcomingSymbol, resetGame};
 })();
 
 const displayController = (() => {
@@ -159,10 +163,7 @@ const displayController = (() => {
                 tile.dataset.y = y;
                 tile.addEventListener('click', () => {
                     let opponent = document.querySelector('.opponent');
-                    let victorName = (opponent.value === "ai") ? 
-                        gameMaster.playRoundPve(tile.dataset.x, tile.dataset.y) :
-                        gameMaster.playRoundPvp(tile.dataset.x, tile.dataset.y);
-
+                    let victorName = gameMaster.playRound(x, y, opponent.value);
                     _renderBoard();
                     opponent.setAttribute("disabled", "true");
                     if(victorName) _displayVictor(victorName);
