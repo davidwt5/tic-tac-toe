@@ -58,10 +58,19 @@ const gameBoard = (() => {
         return _checkVictorRows() || _checkVictorColumns() || _checkVictorDiagonals();
     };
 
+    const checkDraw = () => {
+        for(let i=0; i<3; i++) {
+            for(let j=0; j<3; j++) {
+                if(!_board[i][j]) return false;
+            }
+        }
+        return true;
+    }
+
     // Used for debugging
     const printTiles = () => console.table(_board);
 
-    return Object.assign({getBoard, setTile, initialise, checkVictory, reset}, {printTiles});
+    return Object.assign({getBoard, setTile, initialise, checkVictory, checkDraw, reset}, {printTiles});
 })();
 
 const playerFactory = (name, symbol) => {
@@ -88,6 +97,11 @@ const gameMaster = (() => {
     const playRound = (x, y) => {
         // Only execute if the game is not over and setTile is successful
         if(!gameIsOver && gameBoard.setTile(x, y, turn.getSymbol())) {
+            if(gameBoard.checkDraw()) {
+                gameIsOver = true;
+                return "draw";
+            }
+
             let victorSymbol = gameBoard.checkVictory();
             if(victorSymbol) {
                 gameIsOver = true;
@@ -122,7 +136,14 @@ const displayController = (() => {
     };
 
     const _displayVictor = (victorName) => {
-        alert(`${victorName} is the winner!`);
+        let victorDisplay = document.querySelector('.victor-display')
+        if(victorName === "draw") victorDisplay.innerText = "Draw!"
+        else victorDisplay.innerText = `${victorName} Wins!`;
+    }
+
+    _resetVictorDisplay = () => {
+        document.querySelector('.victor-display')
+            .innerText = "";
     }
 
     const _generateGrid = () => {
@@ -135,7 +156,6 @@ const displayController = (() => {
                 tile.addEventListener('click', () => {
                     let victorName = gameMaster.playRound(tile.dataset.x, tile.dataset.y);
                     _renderBoard();
-                    
                     if(victorName) _displayVictor(victorName);
                 });
                 document.querySelector('.board').appendChild(tile);
@@ -147,6 +167,7 @@ const displayController = (() => {
         .addEventListener('click', e => {
         gameMaster.resetGame();
         _renderBoard();
+        _resetVictorDisplay();
     });
     
     _generateGrid();
