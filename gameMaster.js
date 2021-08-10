@@ -19,21 +19,21 @@ const gameMaster = (() => {
             legalMoveMade = (turn === player.one) ? _playerRound(x, y) : _aiRound(gameBoard.getBoard(), _difficulty);
 
         // If a legal move was made, check draw, victory, and pass the turn
-        if(legalMoveMade) {
-            if(gameBoard.checkDraw()) {
-                gameIsOver = true;
-                return "draw";
-            }
-    
+        if(legalMoveMade) {  
             let victorSymbol = gameBoard.checkVictory();
             if(victorSymbol) {
                 gameIsOver = true;
                 return turn.getName();
             }
+
+            if(gameBoard.checkDraw()) {
+                gameIsOver = true;
+                return "draw";
+            }
     
             // Pass the turn, play round again if its AI's turn
             turn = (turn === player.one) ? player.two : player.one;
-            if(turn === player.two) playRound();
+            if(turn === player.two) return playRound();
         }
     }
 
@@ -43,8 +43,7 @@ const gameMaster = (() => {
     // Selects a move using minimax and places a symbol there. Returns true.
     const _aiRound = (board, difficulty) => {
         let selectedTile = aiController.play(board, difficulty);
-        alert('WIP');
-        // return gameBoard.setTile(selectedTile.x, selectedTile.y, turn.getSymbol());
+        return gameBoard.setTile(selectedTile.x, selectedTile.y, turn.getSymbol());
     }
 
     const resetGame = () => {
