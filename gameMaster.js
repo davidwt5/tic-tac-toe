@@ -10,7 +10,7 @@ const gameMaster = (() => {
 
     const playRound = (x, y) => {
         let legalMoveMade // Boolean: true if a legal move was made, false otherwise
-        
+
         // Try to make a move if the game is not over
         if(!gameIsOver)
             legalMoveMade = (turn === player.one) ? _playerRound(x, y) : _playerRound(x, y);
@@ -51,7 +51,21 @@ const gameMaster = (() => {
         gameIsOver = false;
     }
 
+
+    // Args: TURN_1 or TURN_2
+    const setPlayerTurn = (turnNumber) => {
+        if(turnNumber === TURN_1) {
+            player.one.setSymbol(SYMBOL.O);
+            player.two.setSymbol(SYMBOL.X);
+            turn = player.one;
+        } else if (turnNumber === TURN_2) {
+            player.one.setSymbol(SYMBOL.X);
+            player.two.setSymbol(SYMBOL.O);
+            turn = player.two;
+        }
+    };
+
     gameBoard.initialise();
 
-    return {playRound, resetGame};
+    return {playRound, resetGame, setPlayerTurn};
 })();

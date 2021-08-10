@@ -22,6 +22,12 @@ const displayController = (() => {
             .innerText = "";
     }
 
+    _resetButtonHandler = () => {
+        gameMaster.resetGame();
+        _renderBoard();
+        _resetVictorDisplay();
+    }
+
     const _generateGrid = () => {
         for(let x=0; x<3; x++) {
             for(let y=0; y<3; y++) {
@@ -40,10 +46,15 @@ const displayController = (() => {
     };
 
     document.querySelector('.reset')
-        .addEventListener('click', e => {
-        gameMaster.resetGame();
-        _renderBoard();
-        _resetVictorDisplay();
+        .addEventListener('click', () => _resetButtonHandler());
+
+    document.querySelector('.O').addEventListener('click', () => {
+        _resetButtonHandler();
+        gameMaster.setPlayerTurn(TURN_1);
+    });
+    document.querySelector('.X').addEventListener('click', () => {
+        _resetButtonHandler();
+        gameMaster.setPlayerTurn(TURN_2);
     });
     
     _generateGrid();
