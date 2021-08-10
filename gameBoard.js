@@ -20,15 +20,15 @@ const gameBoard = (() => {
     const getBoard = () => _board;
 
     // Disallows setting a symbol on an occupied tile
-    // Returns 1 on success and -1 on fail
+    // Returns true on success and false on fail
     const setTile = (x, y, symbol) => {
         if(!_board[x][y]) {
             _board[x][y] = symbol;
-            return 1;
+            return true;
         }
         else {
             console.error("ERR: Assignment to an occupied tile");
-            return -1;
+            return false;
         }
     }
 

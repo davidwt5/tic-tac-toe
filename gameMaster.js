@@ -8,9 +8,9 @@ const gameMaster = (() => {
     let turn = player.one;
     let gameIsOver = false;
 
-
     const playRound = (x, y) => {
         let legalMoveMade // Boolean: true if a legal move was made, false otherwise
+        
         // Try to make a move if the game is not over
         if(!gameIsOver)
             legalMoveMade = (turn === player.one) ? _playerRound(x, y) : _playerRound(x, y);
