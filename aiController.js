@@ -20,8 +20,10 @@ const aiController = (() => {
         return moves[randIndex];
     };
 
-    const _minimax = () => {
-
+    // Source: https://www.youtube.com/watch?v=l-hh51ncgDI&t=242s
+    const _minimax = (position, maximisingPlayer) => {
+        if(_gameIsOver(position))
+            return _staticEvaluation(position)
     };
 
     const play = (board, difficulty) => {
